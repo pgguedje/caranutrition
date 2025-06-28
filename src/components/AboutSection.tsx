@@ -186,7 +186,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 0.6, duration: 0.6 }}
               >
                 Je suis <strong className="text-teal-600">Dr Bérénice</strong>, médecin généraliste passionnée par les saveurs authentiques d'Afrique de l'Ouest. Ce blog est le fruit de ma conviction que la santé passe par une nutrition respectueuse de nos traditions.
-              </p>
+              </motion.p>
 
               <motion.p 
                 className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
@@ -195,7 +195,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 0.8, duration: 0.6 }}
               >
                 Ici, vous découvrirez des <strong className="text-green-600">conseils nutritionnels fondés sur la science</strong>, des recettes équilibrées mettant à l'honneur des produits locaux, et des outils pratiques pour adopter une alimentation saine au quotidien.
-              </p>
+              </motion.p>
 
               <motion.p 
                 className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
@@ -204,7 +204,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 1.0, duration: 0.6 }}
               >
                 Mon approche vise à <strong className="text-orange-600">concilier bien-être, plaisir gustatif et respect de notre héritage culinaire</strong>. Chaque article est pensé pour vous aider à prendre soin de votre corps sans renier vos racines.
-              </p>
+              </motion.p>
 
               <motion.div 
                 className={`p-6 rounded-2xl border-l-4 border-teal-500 ${
