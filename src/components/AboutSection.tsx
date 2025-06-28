@@ -44,17 +44,20 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
     <section 
       id="about"
       className={`py-20 relative overflow-hidden ${
-        darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-white via-gray-50 to-white'
+        darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'
       }`}
     >
       <div className="absolute inset-0 bg-wax-pattern opacity-10" />
+      
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Image */}
           <motion.div 
             className="relative flex justify-center lg:justify-start"
             ref={ref}
             initial={{ opacity: 0, x: -50 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
             <div className="relative max-w-md w-full">
@@ -76,7 +79,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                   <motion.div 
                     className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg"
                     initial={{ y: 20, opacity: 0 }}
-                    animate={inView ? { y: 0, opacity: 1 } : {}}
+                    animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5, duration: 0.6 }}
                   >
                     <div className="flex items-center space-x-3">
@@ -91,56 +94,91 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                   </motion.div>
                 </div>
               </motion.div>
-              <motion.div 
-                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-teal-400/20 to-green-500/20 rounded-full backdrop-blur-sm border border-white/30"
-                animate={{ y: [0, -8, 0], rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-teal-500" />
-                </div>
-              </motion.div>
-              <motion.div 
-                className="absolute -bottom-3 -left-3 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full backdrop-blur-sm border border-white/30"
-                animate={{ y: [0, 8, 0], scale: [1, 1.05, 1] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <Leaf className="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" />
-                </div>
-              </motion.div>
             </div>
           </motion.div>
 
-          {/* Texte + contact */}
-          {/* ... (pas modifié, mais à remettre selon ton original) ... */}
+          {/* Texte */}
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="space-y-6">
+              <div className="inline-flex items-center space-x-3 rounded-full px-6 py-3 border-2 bg-teal-100 border-teal-200 text-teal-800">
+                <span className="text-2xl">👩‍⚕️</span>
+                <span className="text-lg font-bold">À propos</span>
+              </div>
+
+              <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight">
+                Rencontrez <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600">Dr Bérénice</span>
+              </h2>
+            </div>
+
+            <div className="space-y-6">
+              <p className="text-lg leading-relaxed">
+                Je suis <strong className="text-teal-600">Dr Bérénice</strong>, médecin généraliste passionnée par les saveurs authentiques d'Afrique de l'Ouest. Ce blog est le fruit de ma conviction que la santé passe par une nutrition respectueuse de nos traditions.
+              </p>
+
+              <p className="text-lg leading-relaxed">
+                Ici, vous découvrirez des <strong className="text-green-600">conseils nutritionnels fondés sur la science</strong>, des recettes équilibrées mettant à l'honneur des produits locaux, et des outils pratiques pour adopter une alimentation saine au quotidien.
+              </p>
+
+              <p className="text-lg leading-relaxed">
+                Mon approche vise à <strong className="text-orange-600">concilier bien-être, plaisir gustatif et respect de notre héritage culinaire</strong>. Chaque article est pensé pour vous aider à prendre soin de votre corps sans renier vos racines.
+              </p>
+
+              <div className="p-6 rounded-2xl border-l-4 border-teal-500 bg-teal-50">
+                <p className="text-lg italic font-medium text-teal-700">
+                  "Que vous soyez en quête d'astuces pratiques, d'informations fiables ou simplement d'inspiration pour vos repas, ce blog est votre espace d'échange et de partage."
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a 
+                href="mailto:guedjeberenice@gmail.com"
+                className="flex items-center space-x-3 bg-gradient-to-r from-teal-600 to-green-600 text-white px-6 py-3 rounded-xl hover:from-teal-700 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                <Heart className="h-5 w-5" />
+                <span className="font-medium">Contactez-moi</span>
+              </a>
+              <a 
+                href="tel:+224621573709"
+                className="flex items-center space-x-3 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105"
+              >
+                <Award className="h-5 w-5" />
+                <span className="font-medium">Consultation</span>
+              </a>
+            </div>
+          </motion.div>
         </div>
 
-        {/* ✅ Correction ici : suppression du </div> en trop */}
+        {/* Réalisations */}
         <motion.div 
           className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.8 }}
         >
           {achievements.map((achievement, index) => (
             <motion.div
               key={index}
               className={`rounded-2xl p-6 border-2 hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${
-                darkMode ? 'bg-gray-800/50 border-gray-600 hover:border-teal-500' : 'bg-white/80 border-gray-200 hover:border-teal-300'
+                darkMode ? 'bg-gray-800/50 border-gray-600 hover:border-teal-500' : 'bg-white border-gray-200 hover:border-teal-300'
               }`}
               initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.8 + index * 0.1, duration: 0.6 }}
               whileHover={{ scale: 1.02 }}
             >
               <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${achievement.color} rounded-2xl mb-4 shadow-lg`}>
                 <achievement.icon className="h-8 w-8 text-white" />
               </div>
-              <h3 className={`text-lg font-serif font-bold mb-3 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+              <h3 className="text-lg font-serif font-bold mb-3">
                 {achievement.title}
               </h3>
-              <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className="text-sm leading-relaxed">
                 {achievement.description}
               </p>
             </motion.div>
