@@ -53,32 +53,38 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
-          {/* Photo et présentation visuelle */}
+          {/* Photo et présentation visuelle - AMÉLIORÉE */}
           <motion.div 
-            className="relative"
+            className="relative flex justify-center lg:justify-start"
             ref={ref}
             initial={{ opacity: 0, x: -50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            {/* Photo principale avec cadre élégant */}
-            <div className="relative">
+            {/* Photo principale avec cadre élégant - DIMENSIONS OPTIMISÉES */}
+            <div className="relative max-w-md w-full">
               <motion.div 
                 className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                <img 
-                  src="/WhatsApp Image 2025-06-28 à 20.33.33_4951ecce.jpg" 
-                  alt="Dr Bérénice - Médecin Généraliste et Expert en Nutrition Africaine"
-                  className="w-full h-[500px] object-cover"
-                />
+                {/* CONTENEUR FLEX POUR CENTRAGE PARFAIT */}
+                <div className="w-full h-[400px] sm:h-[450px] flex items-center justify-center bg-gray-100 overflow-hidden">
+                  <img 
+                    src="/WhatsApp Image 2025-06-28 à 20.33.33_4951ecce.jpg" 
+                    alt="Dr Bérénice - Médecin Généraliste et Expert en Nutrition Africaine"
+                    className="w-full h-full object-cover object-center"
+                    style={{
+                      objectPosition: 'center 20%' // Centrer sur le visage
+                    }}
+                  />
+                </div>
                 
                 {/* Overlay avec dégradé subtil */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                 
-                {/* Badge professionnel */}
-                <div className="absolute bottom-6 left-6 right-6">
+                {/* Badge professionnel - REPOSITIONNÉ */}
+                <div className="absolute bottom-4 left-4 right-4">
                   <motion.div 
                     className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg"
                     initial={{ y: 20, opacity: 0 }}
@@ -86,23 +92,23 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                     transition={{ delay: 0.5, duration: 0.6 }}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-green-500 rounded-xl flex items-center justify-center">
-                        <Stethoscope className="h-6 w-6 text-white" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-teal-500 to-green-500 rounded-xl flex items-center justify-center">
+                        <Stethoscope className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900">Dr Bérénice Guedje</h3>
-                        <p className="text-sm text-gray-600">Médecin Généraliste & Nutritionniste</p>
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">Dr Bérénice Guedje</h3>
+                        <p className="text-xs sm:text-sm text-gray-600">Médecin Généraliste & Nutritionniste</p>
                       </div>
                     </div>
                   </motion.div>
                 </div>
               </motion.div>
 
-              {/* Éléments décoratifs flottants */}
+              {/* Éléments décoratifs flottants - REPOSITIONNÉS */}
               <motion.div 
-                className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-teal-400/20 to-green-500/20 rounded-full backdrop-blur-sm border border-white/30"
+                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-teal-400/20 to-green-500/20 rounded-full backdrop-blur-sm border border-white/30"
                 animate={{ 
-                  y: [0, -10, 0],
+                  y: [0, -8, 0],
                   rotate: [0, 5, -5, 0]
                 }}
                 transition={{ 
@@ -112,15 +118,15 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 }}
               >
                 <div className="w-full h-full flex items-center justify-center">
-                  <Heart className="h-8 w-8 text-teal-500" />
+                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-teal-500" />
                 </div>
               </motion.div>
 
               <motion.div 
-                className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full backdrop-blur-sm border border-white/30"
+                className="absolute -bottom-3 -left-3 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full backdrop-blur-sm border border-white/30"
                 animate={{ 
-                  y: [0, 10, 0],
-                  scale: [1, 1.1, 1]
+                  y: [0, 8, 0],
+                  scale: [1, 1.05, 1]
                 }}
                 transition={{ 
                   duration: 8, 
@@ -130,7 +136,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 }}
               >
                 <div className="w-full h-full flex items-center justify-center">
-                  <Leaf className="h-6 w-6 text-orange-500" />
+                  <Leaf className="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" />
                 </div>
               </motion.div>
             </div>
@@ -180,7 +186,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 0.6, duration: 0.6 }}
               >
                 Je suis <strong className="text-teal-600">Dr Bérénice</strong>, médecin généraliste passionnée par les saveurs authentiques d'Afrique de l'Ouest. Ce blog est le fruit de ma conviction que la santé passe par une nutrition respectueuse de nos traditions.
-              </motion.p>
+              </p>
 
               <motion.p 
                 className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
@@ -189,7 +195,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 0.8, duration: 0.6 }}
               >
                 Ici, vous découvrirez des <strong className="text-green-600">conseils nutritionnels fondés sur la science</strong>, des recettes équilibrées mettant à l'honneur des produits locaux, et des outils pratiques pour adopter une alimentation saine au quotidien.
-              </motion.p>
+              </p>
 
               <motion.p 
                 className={`text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
@@ -198,7 +204,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
                 transition={{ delay: 1.0, duration: 0.6 }}
               >
                 Mon approche vise à <strong className="text-orange-600">concilier bien-être, plaisir gustatif et respect de notre héritage culinaire</strong>. Chaque article est pensé pour vous aider à prendre soin de votre corps sans renier vos racines.
-              </motion.p>
+              </p>
 
               <motion.div 
                 className={`p-6 rounded-2xl border-l-4 border-teal-500 ${
@@ -274,7 +280,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ darkMode }) => {
               </p>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
