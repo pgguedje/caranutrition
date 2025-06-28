@@ -103,6 +103,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
               { name: 'Accueil', action: () => navigate('/') },
               { name: 'Blog', action: () => navigate('/blog') },
               { name: 'Recettes', action: () => navigate('/recettes') },
+              { name: 'À propos', action: () => handleNavigation('about') },
               { name: 'Newsletter', action: () => handleNavigation('newsletter') }
             ].map((item, index) => (
               <motion.button 
@@ -212,6 +213,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
                   { name: 'Accueil', action: () => navigate('/') },
                   { name: 'Blog', action: () => navigate('/blog') },
                   { name: 'Recettes', action: () => navigate('/recettes') },
+                  { name: 'À propos', action: () => handleNavigation('about') },
                   { name: 'Newsletter', action: () => handleNavigation('newsletter') }
                 ].map((item, index) => (
                   <motion.button 
