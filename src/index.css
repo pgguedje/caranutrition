@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Curseur style africain */
+.cursor-african {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>'), auto;
+}
+
+/* Animations personnalisées */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+@keyframes float-african {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(5deg); }
+  66% { transform: translateY(5px) rotate(-3deg); }
+}
+
+.animate-float-african {
+  animation: float-african 6s ease-in-out infinite;
+}
+
+/* Styles pour les tableaux Markdown */
+.prose table {
+  border-collapse: collapse;
+  margin: 2rem 0;
+  width: 100%;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.prose th {
+  background-color: #f3f4f6;
+  font-weight: 700;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.prose td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.prose tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.prose tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* Dark mode pour les tableaux */
+.dark .prose th {
+  background-color: #374151;
+  border-bottom-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark .prose td {
+  border-bottom-color: #4b5563;
+  color: #d1d5db;
+}
+
+.dark .prose tr:nth-child(even) {
+  background-color: #1f2937;
+}
+
+.dark .prose tr:hover {
+  background-color: #374151;
+}
+
+/* Amélioration des listes */
+.prose ul li::marker {
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+.prose ol li::marker {
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+/* Amélioration des citations */
+.prose blockquote {
+  position: relative;
+  font-style: italic;
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.prose blockquote::before {
+  content: '"';
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  font-size: 4rem;
+  color: #f59e0b;
+  opacity: 0.3;
+  font-family: serif;
+}
+
+/* Amélioration du code */
+.prose code {
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+}
+
+.prose pre {
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* Amélioration des liens */
+.prose a {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+}
+
+/* Responsive pour les tableaux */
+@media (max-width: 768px) {
+  .prose table {
+    font-size: 0.875rem;
+  }
+  
+  .prose th,
+  .prose td {
+    padding: 0.75rem 1rem;
+  }
+}
