@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Heart, MessageCircle, Eye } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { viewsManager } from '../utils/viewsManager';
+import { commentManager } from '../utils/commentManager';
 
 interface ModernArticleCardProps {
   article: Article;
@@ -17,25 +18,43 @@ const ModernArticleCard: React.FC<ModernArticleCardProps> = ({ article, onClick,
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(Math.floor(Math.random() * 100) + 20);
   const [views, setViews] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [showCommentPulse, setShowCommentPulse] = useState(false);
 
-  // Charger les vues de l'article
+  // Charger les vues et commentaires de l'article
   useEffect(() => {
     const articleViews = viewsManager.getArticleViews(article.id);
     setViews(articleViews);
 
+    const articleCommentsCount = commentManager.getCommentsCount(article.id);
+    setCommentsCount(articleCommentsCount);
+
     // S'abonner aux changements de vues
-    const unsubscribe = viewsManager.subscribe(() => {
+    const unsubscribeViews = viewsManager.subscribe(() => {
       const updatedViews = viewsManager.getArticleViews(article.id);
       setViews(updatedViews);
     });
 
-    return unsubscribe;
-  }, [article.id]);
+    // S'abonner aux changements de commentaires avec effet visuel
+    const unsubscribeComments = commentManager.subscribe(() => {
+      const newCommentsCount = commentManager.getCommentsCount(article.id);
+      if (newCommentsCount > commentsCount) {
+        setShowCommentPulse(true);
+        setTimeout(() => setShowCommentPulse(false), 2000);
+      }
+      setCommentsCount(newCommentsCount);
+    });
+
+    return () => {
+      unsubscribeViews();
+      unsubscribeComments();
+    };
+  }, [article.id, commentsCount]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Nutrition': return 'bg-green-500';
-      case 'Recette': return 'bg-coral-500'; // Utilise coral uniforme au lieu de red
+      case 'Recette': return 'bg-coral-500';
       case 'Santé': return 'bg-blue-500';
       case 'Budget': return 'bg-yellow-500';
       default: return 'bg-gray-500';
@@ -166,16 +185,42 @@ const ModernArticleCard: React.FC<ModernArticleCardProps> = ({ article, onClick,
             <button
               onClick={handleLike}
               className={`flex items-center space-x-1 transition-colors duration-300 ${
-                isLiked ? 'text-coral-500' : (darkMode ? 'text-gray-400 hover:text-coral-400' : 'text-gray-500 hover:text-coral-500') // Utilise coral uniforme
+                isLiked ? 'text-coral-500' : (darkMode ? 'text-gray-400 hover:text-coral-400' : 'text-gray-500 hover:text-coral-500')
               }`}
             >
               <Heart className={`h-3 w-3 ${isLiked ? 'fill-current' : ''}`} />
               <span className="text-xs">{likes}</span>
             </button>
-            <div className={`flex items-center space-x-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            
+            {/* Compteur de commentaires DYNAMIQUE avec effets */}
+            <motion.div 
+              className={`flex items-center space-x-1 relative ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+              whileHover={{ scale: 1.1 }}
+            >
               <MessageCircle className="h-3 w-3" />
-              <span className="text-xs">{Math.floor(Math.random() * 30) + 5}</span>
-            </div>
+              <motion.span 
+                className="text-xs"
+                key={commentsCount}
+                initial={{ scale: 1.3, color: '#14b8a6' }}
+                animate={{ scale: 1, color: 'inherit' }}
+                transition={{ duration: 0.4, type: "spring" }}
+              >
+                {commentsCount}
+              </motion.span>
+              
+              {/* Effet de pulse pour nouveaux commentaires */}
+              <AnimatePresence>
+                {showCommentPulse && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"
+                    initial={{ scale: 0, opacity: 1 }}
+                    animate={{ scale: [0, 1.5, 0], opacity: [1, 0.7, 0] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: 2 }}
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
           </div>
         </div>
       </div>

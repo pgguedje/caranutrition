@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Tag, Share2, Heart, MessageCircle, Eye, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Article } from '../types';
 import { viewsManager } from '../utils/viewsManager';
+import { commentManager } from '../utils/commentManager';
 
 interface ArticleCardProps {
   article: Article;
@@ -15,20 +16,38 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, index, dark
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(Math.floor(Math.random() * 100) + 20);
   const [views, setViews] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [showCommentPulse, setShowCommentPulse] = useState(false);
 
-  // Charger les vues de l'article
+  // Charger les vues et commentaires de l'article
   useEffect(() => {
     const articleViews = viewsManager.getArticleViews(article.id);
     setViews(articleViews);
 
+    const articleCommentsCount = commentManager.getCommentsCount(article.id);
+    setCommentsCount(articleCommentsCount);
+
     // S'abonner aux changements de vues
-    const unsubscribe = viewsManager.subscribe(() => {
+    const unsubscribeViews = viewsManager.subscribe(() => {
       const updatedViews = viewsManager.getArticleViews(article.id);
       setViews(updatedViews);
     });
 
-    return unsubscribe;
-  }, [article.id]);
+    // S'abonner aux changements de commentaires avec effet visuel
+    const unsubscribeComments = commentManager.subscribe(() => {
+      const newCommentsCount = commentManager.getCommentsCount(article.id);
+      if (newCommentsCount > commentsCount) {
+        setShowCommentPulse(true);
+        setTimeout(() => setShowCommentPulse(false), 2000);
+      }
+      setCommentsCount(newCommentsCount);
+    });
+
+    return () => {
+      unsubscribeViews();
+      unsubscribeComments();
+    };
+  }, [article.id, commentsCount]);
 
   const getCategoryStyle = (category: string) => {
     switch (category) {
@@ -41,9 +60,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, index, dark
         };
       case 'Recette': 
         return {
-          bg: darkMode ? 'bg-coral-900/30' : 'bg-coral-50', // Utilise coral uniforme
-          text: darkMode ? 'text-coral-300' : 'text-coral-700', // Utilise coral uniforme
-          border: darkMode ? 'border-coral-700' : 'border-coral-200', // Utilise coral uniforme
+          bg: darkMode ? 'bg-coral-900/30' : 'bg-coral-50',
+          text: darkMode ? 'text-coral-300' : 'text-coral-700',
+          border: darkMode ? 'border-coral-700' : 'border-coral-200',
           icon: '🍲'
         };
       case 'Santé': 
@@ -251,7 +270,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, index, dark
             <motion.button
               onClick={handleLike}
               className={`flex items-center space-x-1 transition-colors duration-300 ${
-                isLiked ? 'text-coral-500' : (darkMode ? 'text-gray-400 hover:text-coral-400' : 'text-gray-500 hover:text-coral-500') // Utilise coral uniforme
+                isLiked ? 'text-coral-500' : (darkMode ? 'text-gray-400 hover:text-coral-400' : 'text-gray-500 hover:text-coral-500')
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -259,12 +278,35 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onClick, index, dark
               <Heart className={`h-3 w-3 ${isLiked ? 'fill-current' : ''}`} />
               <span className="text-xs font-medium hidden sm:inline">{likes}</span>
             </motion.button>
+            
+            {/* Compteur de commentaires DYNAMIQUE avec effets */}
             <motion.div 
-              className={`flex items-center space-x-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+              className={`flex items-center space-x-1 relative ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
               whileHover={{ scale: 1.1 }}
             >
               <MessageCircle className="h-3 w-3" />
-              <span className="text-xs font-medium hidden sm:inline">{Math.floor(Math.random() * 30) + 5}</span>
+              <motion.span 
+                className="text-xs font-medium hidden sm:inline"
+                key={commentsCount}
+                initial={{ scale: 1.3, color: '#14b8a6' }}
+                animate={{ scale: 1, color: 'inherit' }}
+                transition={{ duration: 0.4, type: "spring" }}
+              >
+                {commentsCount}
+              </motion.span>
+              
+              {/* Effet de pulse pour nouveaux commentaires */}
+              <AnimatePresence>
+                {showCommentPulse && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"
+                    initial={{ scale: 0, opacity: 1 }}
+                    animate={{ scale: [0, 1.5, 0], opacity: [1, 0.7, 0] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: 2 }}
+                  />
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>

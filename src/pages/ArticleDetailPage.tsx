@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Calendar, User, Share2, Heart, MessageCircle, Send, Eye, Star, TrendingUp } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft, Clock, Calendar, User, Share2, Heart, MessageCircle, Send, Eye, Star, TrendingUp, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -25,7 +25,9 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
   const [likes, setLikes] = useState(0);
   const [views, setViews] = useState(0);
   const [uniqueViews, setUniqueViews] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [showNewCommentAlert, setShowNewCommentAlert] = useState(false);
 
   useEffect(() => {
     // S'abonner aux changements d'articles
@@ -37,11 +39,20 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
       }
     });
 
-    // S'abonner aux changements de commentaires
+    // S'abonner aux changements de commentaires avec notification
     const unsubscribeComments = commentManager.subscribe(() => {
       if (article) {
         const articleComments = commentManager.getCommentsByArticle(article.id);
+        const newCommentsCount = commentManager.getCommentsCount(article.id);
+        
+        // Détecter nouveaux commentaires
+        if (newCommentsCount > commentsCount && commentsCount > 0) {
+          setShowNewCommentAlert(true);
+          setTimeout(() => setShowNewCommentAlert(false), 3000);
+        }
+        
         setComments(articleComments);
+        setCommentsCount(newCommentsCount);
       }
     });
 
@@ -74,7 +85,9 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
       
       // Charger les commentaires de cet article
       const articleComments = commentManager.getCommentsByArticle(foundArticle.id);
+      const articleCommentsCount = commentManager.getCommentsCount(foundArticle.id);
       setComments(articleComments);
+      setCommentsCount(articleCommentsCount);
     }
 
     return () => {
@@ -82,7 +95,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
       unsubscribeComments();
       unsubscribeViews();
     };
-  }, [slug, article?.id]);
+  }, [slug, article?.id, commentsCount]);
 
   const generateSlug = (title: string): string => {
     return title
@@ -98,7 +111,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Nutrition': return 'bg-green-500';
-      case 'Recette': return 'bg-coral-500'; // Utilise coral uniforme au lieu de red
+      case 'Recette': return 'bg-coral-500';
       case 'Santé': return 'bg-blue-500';
       case 'Budget': return 'bg-yellow-500';
       default: return 'bg-gray-500';
@@ -146,17 +159,13 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
           text: article?.description,
           url: window.location.href
         });
-        // Success - no need to show alert as the user successfully shared
       } else {
-        // Fallback for browsers that don't support Web Share API
         await navigator.clipboard.writeText(window.location.href);
         alert('Lien copié dans le presse-papiers !');
       }
     } catch (error) {
-      // Handle various share API errors
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          // Permission denied or user cancelled - fallback to clipboard
           try {
             await navigator.clipboard.writeText(window.location.href);
             alert('Partage annulé. Lien copié dans le presse-papiers !');
@@ -164,10 +173,8 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
             alert('Impossible de partager ou copier le lien.');
           }
         } else if (error.name === 'AbortError') {
-          // User cancelled the share dialog - no action needed
           console.log('Partage annulé par l\'utilisateur');
         } else {
-          // Other errors - fallback to clipboard
           try {
             await navigator.clipboard.writeText(window.location.href);
             alert('Erreur de partage. Lien copié dans le presse-papiers !');
@@ -199,6 +206,28 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
 
   return (
     <div className={`min-h-screen pt-20 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+      {/* Notification de nouveaux commentaires */}
+      <AnimatePresence>
+        {showNewCommentAlert && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.9 }}
+            className="fixed top-24 right-4 z-50 bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-xl shadow-lg border border-green-400"
+          >
+            <div className="flex items-center space-x-3">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: 2 }}
+              >
+                <MessageCircle className="h-5 w-5" />
+              </motion.div>
+              <span className="font-medium">Nouveau commentaire ajouté !</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header de l'article */}
       <div className={`border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -237,6 +266,16 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>{uniqueViews.toLocaleString()} uniques</span>
                 </div>
+                <motion.div 
+                  className="flex items-center space-x-1"
+                  key={commentsCount}
+                  initial={{ scale: 1.2, color: '#14b8a6' }}
+                  animate={{ scale: 1, color: 'inherit' }}
+                  transition={{ duration: 0.5, type: "spring" }}
+                >
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="font-medium">{commentsCount} commentaires</span>
+                </motion.div>
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <Star 
@@ -286,7 +325,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   onClick={handleLike}
                   className={`flex items-center space-x-1 sm:space-x-2 px-3 py-2 rounded-full transition-colors text-sm ${
                     isLiked 
-                      ? 'bg-coral-100 text-coral-600 border border-coral-200' // Utilise coral uniforme
+                      ? 'bg-coral-100 text-coral-600 border border-coral-200'
                       : `${darkMode ? 'bg-gray-800 text-gray-300 hover:bg-coral-900/20 hover:text-coral-400' : 'bg-gray-100 text-gray-600 hover:bg-coral-50 hover:text-coral-600'}`
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -342,7 +381,6 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
             remarkPlugins={[remarkGfm, remarkBreaks]}
             rehypePlugins={[rehypeRaw]}
             components={{
-              // Titres avec styles améliorés
               h1: ({children}) => (
                 <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold mb-6 sm:mb-8 mt-8 sm:mt-12 pb-4 border-b-2 ${
                   darkMode ? 'text-teal-400 border-teal-400/30' : 'text-teal-700 border-teal-300'
@@ -364,31 +402,15 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   {children}
                 </h3>
               ),
-              h4: ({children}) => (
-                <h4 className={`text-base sm:text-lg lg:text-xl font-serif font-bold mb-2 sm:mb-3 mt-3 sm:mt-6 ${
-                  darkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}>
-                  {children}
-                </h4>
-              ),
-              
-              // Paragraphes avec espacement amélioré
               p: ({children}) => (
                 <p className={`mb-4 sm:mb-6 leading-relaxed text-base sm:text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {children}
                 </p>
               ),
-              
-              // Listes avec styles améliorés
               ul: ({children}) => (
                 <ul className="mb-6 sm:mb-8 space-y-2 sm:space-y-3 pl-6 sm:pl-8">
                   {children}
                 </ul>
-              ),
-              ol: ({children}) => (
-                <ol className="mb-6 sm:mb-8 space-y-2 sm:space-y-3 pl-6 sm:pl-8 list-decimal">
-                  {children}
-                </ol>
               ),
               li: ({children}) => (
                 <li className={`relative text-base sm:text-lg leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -396,15 +418,11 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   {children}
                 </li>
               ),
-              
-              // Texte en gras
               strong: ({children}) => (
                 <strong className={`font-bold ${darkMode ? 'text-teal-400' : 'text-teal-700'}`}>
                   {children}
                 </strong>
               ),
-              
-              // Citations avec style amélioré
               blockquote: ({children}) => (
                 <blockquote className={`border-l-4 border-teal-400 pl-4 sm:pl-8 py-4 sm:py-6 my-6 sm:my-8 italic text-lg sm:text-xl rounded-r-lg ${
                   darkMode ? 'bg-gray-800 text-gray-300' : 'bg-teal-50 text-gray-700'
@@ -412,26 +430,6 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   {children}
                 </blockquote>
               ),
-              
-              // Code inline
-              code: ({children}) => (
-                <code className={`px-1 sm:px-2 py-1 rounded text-sm font-mono ${
-                  darkMode ? 'bg-gray-700 text-teal-300' : 'bg-gray-100 text-teal-700'
-                }`}>
-                  {children}
-                </code>
-              ),
-              
-              // Blocs de code
-              pre: ({children}) => (
-                <pre className={`p-4 sm:p-6 rounded-xl overflow-x-auto my-6 sm:my-8 text-sm ${
-                  darkMode ? 'bg-gray-800 border border-gray-600' : 'bg-gray-100 border border-gray-200'
-                }`}>
-                  {children}
-                </pre>
-              ),
-              
-              // TABLEAUX avec style professionnel et responsive
               table: ({children}) => (
                 <div className="overflow-x-auto my-6 sm:my-8 rounded-xl shadow-lg">
                   <table className={`w-full border-collapse min-w-full ${
@@ -440,20 +438,6 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                     {children}
                   </table>
                 </div>
-              ),
-              thead: ({children}) => (
-                <thead className={`${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                }`}>
-                  {children}
-                </thead>
-              ),
-              tbody: ({children}) => (
-                <tbody className={`divide-y ${
-                  darkMode ? 'divide-gray-600' : 'divide-gray-200'
-                }`}>
-                  {children}
-                </tbody>
               ),
               th: ({children}) => (
                 <th className={`px-3 sm:px-6 py-3 sm:py-4 text-left font-bold text-xs sm:text-sm uppercase tracking-wider ${
@@ -469,40 +453,6 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
                   {children}
                 </td>
               ),
-              
-              // Lignes horizontales
-              hr: () => (
-                <hr className={`my-8 sm:my-12 border-2 ${
-                  darkMode ? 'border-gray-700' : 'border-gray-200'
-                }`} />
-              ),
-              
-              // Images dans le contenu
-              img: ({src, alt}) => (
-                <img 
-                  src={src} 
-                  alt={alt} 
-                  className="w-full h-auto rounded-lg sm:rounded-xl shadow-lg my-6 sm:my-8"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = getDefaultImage();
-                  }}
-                />
-              ),
-              
-              // Liens
-              a: ({href, children}) => (
-                <a 
-                  href={href} 
-                  className={`font-medium underline decoration-2 underline-offset-2 transition-colors ${
-                    darkMode ? 'text-teal-400 hover:text-teal-300' : 'text-teal-700 hover:text-teal-600'
-                  }`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {children}
-                </a>
-              )
             }}
           >
             {article.contenu_markdown}
@@ -537,7 +487,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
           </motion.div>
         )}
 
-        {/* Section des commentaires */}
+        {/* Section des commentaires avec compteur dynamique */}
         <motion.div 
           className="space-y-6 sm:space-y-8"
           initial={{ opacity: 0, y: 30 }}
@@ -546,9 +496,15 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
         >
           <div className="flex items-center space-x-3 sm:space-x-4">
             <MessageCircle className={`h-6 w-6 sm:h-8 sm:w-8 ${darkMode ? 'text-teal-400' : 'text-teal-600'}`} />
-            <h3 className={`text-2xl sm:text-3xl font-serif font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-              Commentaires ({comments.length})
-            </h3>
+            <motion.h3 
+              className={`text-2xl sm:text-3xl font-serif font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}
+              key={commentsCount}
+              initial={{ scale: 1.1, color: '#14b8a6' }}
+              animate={{ scale: 1, color: 'inherit' }}
+              transition={{ duration: 0.5, type: "spring" }}
+            >
+              Commentaires ({commentsCount})
+            </motion.h3>
           </div>
 
           {/* Formulaire de commentaire */}
@@ -607,40 +563,47 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ darkMode }) => {
 
           {/* Liste des commentaires */}
           <div className="space-y-3 sm:space-y-4">
-            {comments.map((comment, index) => (
-              <motion.div 
-                key={comment.id} 
-                className={`rounded-lg sm:rounded-xl p-4 sm:p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-teal-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                    {comment.author_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
-                      <h4 className={`font-bold text-sm sm:text-base ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                        {comment.author_name}
-                      </h4>
-                      <span className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {new Date(comment.created_at).toLocaleDateString('fr-FR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
+            <AnimatePresence>
+              {comments.map((comment, index) => (
+                <motion.div 
+                  key={comment.id} 
+                  className={`rounded-lg sm:rounded-xl p-4 sm:p-6 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ delay: 0.8 + index * 0.1, type: "spring" }}
+                  layout
+                >
+                  <div className="flex items-start space-x-3">
+                    <motion.div 
+                      className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-teal-400 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      {comment.author_name.charAt(0).toUpperCase()}
+                    </motion.div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
+                        <h4 className={`font-bold text-sm sm:text-base ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                          {comment.author_name}
+                        </h4>
+                        <span className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {new Date(comment.created_at).toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                      <p className={`leading-relaxed text-sm sm:text-base break-words ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {comment.content}
+                      </p>
                     </div>
-                    <p className={`leading-relaxed text-sm sm:text-base break-words ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {comment.content}
-                    </p>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
             
             {comments.length === 0 && (
               <div className={`text-center py-8 sm:py-12 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
