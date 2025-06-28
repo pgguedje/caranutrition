@@ -4,7 +4,6 @@ import { Leaf, Heart, Mail, Facebook, Twitter, Instagram, MapPin, Phone } from '
 interface FooterProps {
   darkMode: boolean;
 }
-
 const Footer: React.FC<FooterProps> = ({ darkMode }) => {
   return (
     <footer className={`relative overflow-hidden ${
