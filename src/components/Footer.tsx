@@ -212,32 +212,41 @@ const Footer: React.FC<FooterProps> = ({ darkMode }) => {
         </div>
 
         {/* Bottom bar */}
-        <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-700'}`}>
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-              <div className={`flex items-center space-x-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
-                <Heart className="h-4 w-4 text-coral-400 animate-pulse-soft" />
-                <span>Fait avec amour pour l'Afrique</span>
-              </div>
-              
-              <div className={`flex items-center space-x-6 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
-                <a href="#" className="hover:text-teal-300 transition-colors duration-300">
-                  Politique de confidentialité
-                </a>
-                <a href="#" className="hover:text-teal-300 transition-colors duration-300">
-                  Mentions légales
-                </a>
-                <a href="mailto:guedjeberenice@gmail.com" className="hover:text-teal-300 transition-colors duration-300">
-                  Contact
-                </a>
-              </div>
-              
-              <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
-                © 2024 CaraNutrition. Tous droits réservés.
-              </p>
-            </div>
-          </div>
-        </div>
+       {/* Bottom bar */}
+<div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-700'}`}>
+  <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
+    <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+      <div className={`flex items-center space-x-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
+        <Heart className="h-4 w-4 text-coral-400 animate-pulse-soft" />
+        <span>Fait avec amour pour l'Afrique</span>
+      </div>
+
+      <div className={`flex items-center space-x-6 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
+        <span>
+          Développé par{' '}
+          <a
+            href="https://www.linkedin.com/in/prince-gedeon-guedje-488819228/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-teal-300 underline transition-colors duration-300"
+          >
+            PrinceGéd
+          </a>
+        </span>
+        <a
+          href="mailto:guedjeberenice@gmail.com"
+          className="hover:text-teal-300 transition-colors duration-300"
+        >
+          Contact
+        </a>
+      </div>
+
+      <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}>
+        © 2025 CaraNutrition. Tous droits réservés.
+      </p>
+    </div>
+  </div>
+
       </div>
     </footer>
   );
