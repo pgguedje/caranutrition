@@ -1,6 +1,7 @@
 import React from 'react';
 import HeroCarousel from '../components/HeroCarousel';
 import LatestArticles from '../components/LatestArticles';
+import AboutSection from '../components/AboutSection';
 import NutritionSurveySection from '../components/NutritionSurveySection';
 import NewsletterSignup from '../components/NewsletterSignup';
 import MinimalFooter from '../components/MinimalFooter';
@@ -21,6 +22,9 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode }) => {
       <div id="articles">
         <LatestArticles darkMode={darkMode} />
       </div>
+      
+      {/* Section À propos avec Dr Bérénice */}
+      <AboutSection darkMode={darkMode} />
       
       {/* Section Formulaire Nutrition */}
       <NutritionSurveySection darkMode={darkMode} />
